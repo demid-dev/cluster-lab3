@@ -3,7 +3,7 @@
 #include <time.h>
 #include <omp.h>
 
-#define ARRAY_SIZE 10
+#define ARRAY_SIZE 1000000000
 
 int compare(const void* a, const void* b) {
     const int* x = (const int*) a;
@@ -56,15 +56,17 @@ void my_qsort(const void* base, const size_t num, const size_t size, int (*compa
     int* array = (int*) base;
 
     #pragma omp parallel
-    #pragma omp single nowait
     {
-        quicksort(array, 0, num - 1, compare);
+        #pragma omp single nowait
+        {
+            quicksort(array, 0, num - 1, compare);
+        }
     }
 }
 
 int main(int argc, char** argv) {
     int i;
-    int array[ARRAY_SIZE];
+    int* array = (int*) malloc(ARRAY_SIZE * sizeof(int));
 
     // Read array from file
     FILE* fp;
@@ -86,6 +88,8 @@ int main(int argc, char** argv) {
         fprintf(fp, "%d\n", array[i]);
     }
     fclose(fp);
+
+    free(array);
 
     return 0;
 }
