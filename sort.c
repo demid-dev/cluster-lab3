@@ -62,8 +62,6 @@ int main(int argc, char** argv) {
     }
     fclose(fp);
 
-    int num_threads = omp_get_max_threads();
-
     // Sort the array using my_qsort()
     double start_time = omp_get_wtime();
     my_qsort(array, ARRAY_SIZE, sizeof(int), compare);
@@ -72,7 +70,6 @@ int main(int argc, char** argv) {
     // Write sorted array to file
     fp = fopen("output.dat", "w, ccs=UTF-8");
     fprintf(fp, "Execution time: %f seconds\n", end_time - start_time);
-    fprintf(fp, "Using %d threads.\n", num_threads);
     for (i = 0; i < ARRAY_SIZE; i++) {
         fprintf(fp, "%d\n", array[i]);
     }
