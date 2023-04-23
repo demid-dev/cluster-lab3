@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ARRAY_SIZE 100
+#define ARRAY_SIZE 1000000
 
 int main() {
     int i;
@@ -16,8 +16,10 @@ int main() {
 
     // Save array to file
     FILE* fp;
-    fp = fopen("array.dat", "wb");
-    fwrite(array, sizeof(int), ARRAY_SIZE, fp);
+    fp = fopen("array.dat", "w, ccs=UTF-8");
+    for (i = 0; i < ARRAY_SIZE; i++) {
+        fprintf(fp, "%d\n", array[i]);
+    }
     fclose(fp);
 
     return 0;
