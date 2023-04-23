@@ -46,7 +46,6 @@ void quicksort(int* array, int low, int high, int (*compare)(const void*, const 
 
 void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     int* array = (int*) base;
-    int i;
 
     quicksort(array, 0, num - 1, compare);
 }
@@ -75,6 +74,13 @@ int main() {
     printf("\n");
 
     printf("Execution time: %f seconds\n", end_time - start_time);
+
+    // Write sorted array to file
+    fp = fopen("output.dat", "w, ccs=UTF-8");
+    for (i = 0; i < ARRAY_SIZE; i++) {
+        fprintf(fp, "%d\n", array[i]);
+    }
+    fclose(fp);
 
     return 0;
 }
