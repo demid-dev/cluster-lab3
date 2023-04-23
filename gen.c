@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ARRAY_SIZE 1000000000
+#define ARRAY_SIZE 10000000
 
 int main() {
     int i;
