@@ -17,14 +17,6 @@ void swap(int* a, int* b) {
     *b = temp;
 }
 
-int is_valid_index(int index, int low, int high) {
-    return (index >= low && index <= high);
-}
-
-int is_valid_pivot(int pivot, int low, int high) {
-    return is_valid_index(pivot, low, high - 1);
-}
-
 int partition(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     int pivot = array[high];
     int i = low - 1;
@@ -33,29 +25,20 @@ int partition(int* array, int low, int high, int (*compare)(const void*, const v
     for (j = low; j <= high - 1; j++) {
         if (compare(&array[j], &pivot) <= 0) {
             i++;
-            if (i != j && is_valid_index(i, low, high - 1) && is_valid_index(j, low, high - 1)) {
-                swap(&array[i], &array[j]);
-            }
+            swap(&array[i], &array[j]);
         }
     }
 
-    int pivot_index = i + 1;
-    if (is_valid_pivot(pivot_index, low, high)) {
-        swap(&array[pivot_index], &array[high]);
-        return pivot_index;
-    } else {
-        return low - 1;
-    }
-}
+    swap(&array[i + 1], &array[high]);
 
+    return i + 1;
+}
 
 void quicksort(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     if (low < high) {
         int pi = partition(array, low, high, compare);
 
-        #pragma omp task shared(array,compare)
         quicksort(array, low, pi - 1, compare);
-        #pragma omp task shared(array,compare)
         quicksort(array, pi + 1, high, compare);
     }
 }
@@ -63,12 +46,7 @@ void quicksort(int* array, int low, int high, int (*compare)(const void*, const 
 void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     int* array = (int*) base;
 
-    #pragma omp parallel shared(array,compare)
-    {
-        #pragma omp single
-        quicksort(array, 0, num - 1, compare);
-    }
-    #pragma omp taskwait
+    quicksort(array, 0, num - 1, compare);
 }
 
 int main(int argc, char** argv) {
