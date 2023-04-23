@@ -38,17 +38,25 @@ void quicksort(int* array, const int low, const int high, int (*compare)(const v
     if (low < high) {
         int pi = partition(array, low, high, compare);
 
-        #pragma omp task firstprivate(array, low, pi) nowait
+        #pragma omp task
         {
             quicksort(array, low, pi - 1, compare);
         }
 
-        #pragma omp task firstprivate(array, pi, high) nowait
+        #pragma omp task
         {
             quicksort(array, pi + 1, high, compare);
         }
 
         #pragma omp taskwait
+
+        #pragma omp parallel
+        {
+            #pragma omp for schedule(static)
+            for (int i = low; i <= high; i++) {
+                // do nothing, we just need to force OpenMP to create threads and distribute the iterations
+            }
+        }
     }
 }
 
@@ -59,7 +67,10 @@ void my_qsort(const void* base, const size_t num, const size_t size, int (*compa
     {
         #pragma omp single nowait
         {
-            quicksort(array, 0, num - 1, compare);
+            #pragma omp task
+            {
+                quicksort(array, 0, num - 1, compare);
+            }
         }
     }
 }
