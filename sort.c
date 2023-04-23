@@ -50,7 +50,7 @@ void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, c
     quicksort(array, 0, num - 1, compare);
 }
 
-int main() {
+int main(int argc, char** argv) {
     int i;
     int array[ARRAY_SIZE];
 
@@ -63,18 +63,16 @@ int main() {
     fclose(fp);
 
     int num_threads = omp_get_max_threads();
-    printf("Using %d threads.\n", num_threads);
-
 
     // Sort the array using my_qsort()
     double start_time = omp_get_wtime();
     my_qsort(array, ARRAY_SIZE, sizeof(int), compare);
     double end_time = omp_get_wtime();
 
-    printf("Execution time: %f seconds\n", end_time - start_time);
-
     // Write sorted array to file
     fp = fopen("output.dat", "w, ccs=UTF-8");
+    fprintf(fp, "Execution time: %f seconds\n", end_time - start_time);
+    fprintf(fp, "Using %d threads.\n", num_threads);
     for (i = 0; i < ARRAY_SIZE; i++) {
         fprintf(fp, "%d\n", array[i]);
     }
