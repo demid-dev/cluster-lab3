@@ -67,12 +67,6 @@ int main() {
     my_qsort(array, ARRAY_SIZE, sizeof(int), compare);
     double end_time = omp_get_wtime();
 
-    // Print sorted array
-    for (i = 0; i < ARRAY_SIZE; i++) {
-        printf("%d ", array[i]);
-    }
-    printf("\n");
-
     printf("Execution time: %f seconds\n", end_time - start_time);
 
     // Write sorted array to file
