@@ -3,7 +3,7 @@
 #include <time.h>
 #include <omp.h>
 
-#define ARRAY_SIZE 1000000
+#define ARRAY_SIZE 10
 
 int compare(const void* a, const void* b) {
     const int* x = (const int*) a;
@@ -38,15 +38,17 @@ void quicksort(int* array, int low, int high, int (*compare)(const void*, const 
     if (low < high) {
         int pi = partition(array, low, high, compare);
 
-        #pragma omp task shared(array)
+        #pragma omp task firstprivate(array, low, pi)
         {
             quicksort(array, low, pi - 1, compare);
         }
 
-        #pragma omp task shared(array)
+        #pragma omp task firstprivate(array, pi, high)
         {
             quicksort(array, pi + 1, high, compare);
         }
+
+        #pragma omp barrier
     }
 }
 
