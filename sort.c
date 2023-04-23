@@ -62,6 +62,10 @@ int main() {
     }
     fclose(fp);
 
+    int num_threads = omp_get_max_threads();
+    printf("Using %d threads.\n", num_threads);
+
+
     // Sort the array using my_qsort()
     double start_time = omp_get_wtime();
     my_qsort(array, ARRAY_SIZE, sizeof(int), compare);
