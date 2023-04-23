@@ -25,7 +25,7 @@ int partition(int* array, int low, int high, int (*compare)(const void*, const v
     #pragma omp parallel for shared(array, pivot, low, high) private(j) firstprivate(i)
     for (j = low; j <= high - 1; j++) {
         if (compare(&array[j], &pivot) <= 0) {
-            #pragma omp critical
+            #pragma omp atomic
             {
                 i++;
             }
