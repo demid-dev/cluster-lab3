@@ -38,25 +38,22 @@ void quicksort(int* array, int low, int high, int (*compare)(const void*, const 
     if (low < high) {
         int pi = partition(array, low, high, compare);
 
-        #pragma omp parallel sections
-        {
-            #pragma omp section
-            {
-                quicksort(array, low, pi - 1, compare);
-            }
-            #pragma omp section
-            {
-                quicksort(array, pi + 1, high, compare);
-            }
-        }
-        #pragma omp barrier
+        #pragma omp task shared(array,compare)
+        quicksort(array, low, pi - 1, compare);
+        #pragma omp task shared(array,compare)
+        quicksort(array, pi + 1, high, compare);
     }
 }
 
 void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     int* array = (int*) base;
 
-    quicksort(array, 0, num - 1, compare);
+    #pragma omp parallel shared(array,compare)
+    {
+        #pragma omp single
+        quicksort(array, 0, num - 1, compare);
+    }
+    #pragma omp taskwait
 }
 
 int main(int argc, char** argv) {
@@ -73,10 +70,7 @@ int main(int argc, char** argv) {
 
     // Sort the array using my_qsort()
     double start_time = omp_get_wtime();
-    #pragma omp parallel
-    {
-        my_qsort(array, ARRAY_SIZE, sizeof(int), compare);
-    }
+    my_qsort(array, ARRAY_SIZE, sizeof(int), compare);
     double end_time = omp_get_wtime();
 
     // Write sorted array to file
