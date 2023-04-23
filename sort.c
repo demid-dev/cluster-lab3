@@ -51,7 +51,7 @@ void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, c
 
 int main(int argc, char** argv) {
     int i;
-    int array[ARRAY_SIZE];
+    int* array = (int*) malloc(ARRAY_SIZE * sizeof(int));
 
     // Read array from file
     FILE* fp;
@@ -73,6 +73,8 @@ int main(int argc, char** argv) {
         fprintf(fp, "%d\n", array[i]);
     }
     fclose(fp);
+
+    free(array);
 
     return 0;
 }
