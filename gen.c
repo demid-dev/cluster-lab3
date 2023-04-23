@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ARRAY_SIZE 1000000
+#define ARRAY_SIZE 1000000000
 
 int main() {
     int i;
-    int array[ARRAY_SIZE];
+    int* array = (int*) malloc(ARRAY_SIZE * sizeof(int));
 
     // Initialize array with random values
     srand(time(NULL));
@@ -21,6 +21,8 @@ int main() {
         fprintf(fp, "%d\n", array[i]);
     }
     fclose(fp);
+
+    free(array);
 
     return 0;
 }
