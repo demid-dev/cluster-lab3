@@ -17,7 +17,7 @@ void swap(int* a, int* b) {
     *b = temp;
 }
 
-int partition(int* array, const int low, const int high, int (*compare)(const void*, const void*)) {
+int partition(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     int pivot = array[high];
     int i = low - 1;
     int j;
@@ -34,8 +34,7 @@ int partition(int* array, const int low, const int high, int (*compare)(const vo
     return i + 1;
 }
 
-
-void quicksort(int* array, const int low, const int high, int (*compare)(const void*, const void*)) {
+void quicksort(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     if (low < high) {
         int pi = partition(array, low, high, compare);
 
@@ -50,10 +49,11 @@ void quicksort(int* array, const int low, const int high, int (*compare)(const v
                 quicksort(array, pi + 1, high, compare);
             }
         }
+        #pragma omp barrier
     }
 }
 
-void my_qsort(const void* base, const size_t num, const size_t size, int (*compare)(const void*, const void*)) {
+void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     int* array = (int*) base;
 
     quicksort(array, 0, num - 1, compare);
