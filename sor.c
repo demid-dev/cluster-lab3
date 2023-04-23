@@ -17,6 +17,14 @@ void swap(int* a, int* b) {
     *b = temp;
 }
 
+int is_valid_index(int index, int low, int high) {
+    return (index >= low && index <= high);
+}
+
+int is_valid_pivot(int pivot, int low, int high) {
+    return is_valid_index(pivot, low, high - 1);
+}
+
 int partition(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     int pivot = array[high];
     int i = low - 1;
@@ -25,14 +33,21 @@ int partition(int* array, int low, int high, int (*compare)(const void*, const v
     for (j = low; j <= high - 1; j++) {
         if (compare(&array[j], &pivot) <= 0) {
             i++;
-            swap(&array[i], &array[j]);
+            if (i != j && is_valid_index(i, low, high - 1) && is_valid_index(j, low, high - 1)) {
+                swap(&array[i], &array[j]);
+            }
         }
     }
 
-    swap(&array[i + 1], &array[high]);
-
-    return i + 1;
+    int pivot_index = i + 1;
+    if (is_valid_pivot(pivot_index, low, high)) {
+        swap(&array[pivot_index], &array[high]);
+        return pivot_index;
+    } else {
+        return low - 1;
+    }
 }
+
 
 void quicksort(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     if (low < high) {
