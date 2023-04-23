@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     double end_time = omp_get_wtime();
 
     // Write sorted array to file
-    fp = fopen("output.dat", "w, ccs=UTF-8");
+    fp = fopen(argv[1], "w, ccs=UTF-8");
     fprintf(fp, "Execution time: %f seconds\n", end_time - start_time);
     for (i = 0; i < ARRAY_SIZE; i++) {
         fprintf(fp, "%d\n", array[i]);
