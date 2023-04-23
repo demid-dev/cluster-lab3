@@ -34,19 +34,24 @@ int partition(int* array, int low, int high, int (*compare)(const void*, const v
     return i + 1;
 }
 
-void quicksort(int* array, int low, int high, int (*compare)(const void*, const void*)) {
+void quicksort_parallel(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     if (low < high) {
         int pi = partition(array, low, high, compare);
 
-        quicksort(array, low, pi - 1, compare);
-        quicksort(array, pi + 1, high, compare);
+        #pragma omp parallel sections
+        {
+            #pragma omp section
+            quicksort_parallel(array, low, pi - 1, compare);
+            #pragma omp section
+            quicksort_parallel(array, pi + 1, high, compare);
+        }
     }
 }
 
 void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     int* array = (int*) base;
 
-    quicksort(array, 0, num - 1, compare);
+    quicksort_parallel(array, 0, num - 1, compare);
 }
 
 int main(int argc, char** argv) {
