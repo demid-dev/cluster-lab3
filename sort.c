@@ -34,6 +34,7 @@ int partition(int* array, const int low, const int high, int (*compare)(const vo
     return i + 1;
 }
 
+
 void quicksort(int* array, const int low, const int high, int (*compare)(const void*, const void*)) {
     if (low < high) {
         int pi = partition(array, low, high, compare);
