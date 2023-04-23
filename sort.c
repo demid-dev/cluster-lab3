@@ -3,7 +3,7 @@
 #include <time.h>
 #include <omp.h>
 
-#define ARRAY_SIZE 1000000000
+#define ARRAY_SIZE 10000000
 
 int compare(const void* a, const void* b) {
     const int* x = (const int*) a;
@@ -17,7 +17,7 @@ void swap(int* a, int* b) {
     *b = temp;
 }
 
-int partition(int* array, const int low, const int high, int (*compare)(const void*, const void*)) {
+int partition(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     int pivot = array[high];
     int i = low - 1;
     int j;
@@ -34,50 +34,24 @@ int partition(int* array, const int low, const int high, int (*compare)(const vo
     return i + 1;
 }
 
-void quicksort(int* array, const int low, const int high, int (*compare)(const void*, const void*)) {
+void quicksort(int* array, int low, int high, int (*compare)(const void*, const void*)) {
     if (low < high) {
         int pi = partition(array, low, high, compare);
 
-        #pragma omp task
-        {
-            quicksort(array, low, pi - 1, compare);
-        }
-
-        #pragma omp task
-        {
-            quicksort(array, pi + 1, high, compare);
-        }
-
-        #pragma omp taskwait
-
-        #pragma omp parallel
-        {
-            #pragma omp for schedule(static)
-            for (int i = low; i <= high; i++) {
-                // do nothing, we just need to force OpenMP to create threads and distribute the iterations
-            }
-        }
+        quicksort(array, low, pi - 1, compare);
+        quicksort(array, pi + 1, high, compare);
     }
 }
 
-void my_qsort(const void* base, const size_t num, const size_t size, int (*compare)(const void*, const void*)) {
+void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     int* array = (int*) base;
 
-    #pragma omp parallel
-    {
-        #pragma omp single nowait
-        {
-            #pragma omp task
-            {
-                quicksort(array, 0, num - 1, compare);
-            }
-        }
-    }
+    quicksort(array, 0, num - 1, compare);
 }
 
 int main(int argc, char** argv) {
     int i;
-    int* array = (int*) malloc(ARRAY_SIZE * sizeof(int));
+    int array[ARRAY_SIZE];
 
     // Read array from file
     FILE* fp;
@@ -99,8 +73,6 @@ int main(int argc, char** argv) {
         fprintf(fp, "%d\n", array[i]);
     }
     fclose(fp);
-
-    free(array);
 
     return 0;
 }
