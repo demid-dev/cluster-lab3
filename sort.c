@@ -22,10 +22,13 @@ int partition(int* array, int low, int high, int (*compare)(const void*, const v
     int i = low - 1;
     int j;
 
-    #pragma omp parallel for shared(array, pivot, low, high, i) private(j)
+    #pragma omp parallel for shared(array, pivot, low, high) private(j) firstprivate(i)
     for (j = low; j <= high - 1; j++) {
         if (compare(&array[j], &pivot) <= 0) {
-            i++;
+            #pragma omp critical
+            {
+                i++;
+            }
             swap(&array[i], &array[j]);
         }
     }
@@ -39,15 +42,28 @@ void quicksort(int* array, int low, int high, int (*compare)(const void*, const 
     if (low < high) {
         int pi = partition(array, low, high, compare);
 
-        quicksort(array, low, pi - 1, compare);
-        quicksort(array, pi + 1, high, compare);
+        #pragma omp task
+        {
+            quicksort(array, low, pi - 1, compare);
+        }
+
+        #pragma omp task
+        {
+            quicksort(array, pi + 1, high, compare);
+        }
+
+        #pragma omp taskwait
     }
 }
 
 void my_qsort(void* base, size_t num, size_t size, int (*compare)(const void*, const void*)) {
     int* array = (int*) base;
 
-    quicksort(array, 0, num - 1, compare);
+    #pragma omp parallel
+    #pragma omp single nowait
+    {
+        quicksort(array, 0, num - 1, compare);
+    }
 }
 
 int main(int argc, char** argv) {
