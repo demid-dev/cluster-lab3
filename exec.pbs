@@ -13,5 +13,5 @@ ml openmpi
 
 for i in $(seq 1 8); do
     export OMP_NUM_THREADS=$i
-    mpirun -np $i ./sort output_$i.dat
+    ./sort output_$i.dat
 done
